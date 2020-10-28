@@ -4,7 +4,6 @@ on:
     branches:
       - 'master'
 jobs:
-  cypress-e2e-chrome-latest:
   name: Run on Chrome latest
   runs-on: ubuntu-20.04	
   container: cypress/browsers:latest
