@@ -4,8 +4,9 @@ on:
     branches:
       - 'main'
   # Add this part if you want to schedule test rerun
-  # schedule:
-  #   - cron: '0 8 1-31 * *'
+  schedule:
+    # Runs once every 4 hours
+    - cron: '0 */4 * * *'
 
 jobs:
   
