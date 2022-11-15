@@ -120,19 +120,19 @@ jobs:
     #       SENDGRID_PASSWORD: ${{ secrets.SENDGRID_PASSWORD }}
     #       SENDGRID_FROM: ${{ secrets.SENDGRID_FROM }}
           
-     - name: Post Slack Notification
-       uses: 8398a7/action-slack@v3
-       with:
-          username: "HS-TELUS-E2E-REPORT"
-          status: custom
-          fields: workflow,message,commit,repo,ref,author
-          custom_payload: |
-            {
-              attachments: [{
-                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}\n (${process.env.AS_MESSAGE})-(${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }}`,
-              }]
-            }
-       env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-       if: always() # Pick up events even if the job fails or is cancelled.
+    #  - name: Post Slack Notification
+    #    uses: 8398a7/action-slack@v3
+    #    with:
+    #       username: "CYPRESS-E2E-REPORT"
+    #       status: custom
+    #       fields: workflow,message,commit,repo,ref,author
+    #       custom_payload: |
+    #         {
+    #           attachments: [{
+    #             color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+    #             text: `${process.env.AS_WORKFLOW}\n (${process.env.AS_MESSAGE})-(${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }}`,
+    #           }]
+    #         }
+    #    env:
+    #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    #    if: always() # Pick up events even if the job fails or is cancelled.
