@@ -1,22 +1,47 @@
 {
   "name": "cypress-example-e2e",
   "version": "1.0.0",
-  "description": "This a cypress example e2e project using Github Actions",
-  "main": "index.js",
-  "dependencies": {
-    "cypress": "^5.5.0"
-  },
+  "description": "This a Cypress example E2E project using Github Actions",
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-angular": "^11.0.0",
+    "@dwp/commitlint-config-base": "^4.0.0",
+    "ansi-regex": ">=5.0.1",
+    "commitizen": "^4.2.4",
+    "cypress": "^10.10.0",
+    "cypress-email-results": "^1.8.0",
     "cypress-multi-reporters": "^1.4.0",
-    "mocha": "^8.2.0",
-    "mochawesome": "^6.1.1",
-    "mochawesome-merge": "^4.2.0",
-    "mochawesome-report-generator": "^5.1.0"
+    "cypress-wait-until": "^1.7.1",
+    "cz-conventional-changelog": "^3.0.1",
+    "eslint": "8.17.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-react": "^7.30.0",
+    "husky": "^4.3.8",
+    "mocha": "^9.1.2",
+    "mochawesome": "^7.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhargav-garlapati/cypress-example-e2e"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npm run lint"
+    }
   },
   "scripts": {
-    "test:chrome": "cypress run --browser chrome",
-    "report:merge": "mochawesome-merge cypress/results/json/*.json > index.json",
-    "report:generate": "marge index.json --reportDir public --assetsDir public/assets --reportPageTitle index.html"
+    "lint": "eslint 'cypress/e2e' --ext .js --config .eslintrc.json",
+    "lint:fix": "npm run lint -- --fix",
+    "report:merge": "npx --yes mochawesome-merge@4.2.1 cypress/results/json/*.json -o index.json",
+    "report:generate": "npx mochawesome-report-generator@6.2.0 index.json --reportDir public --assetsDir public/assets --reportPageTitle index.html",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "author": "Bhargav Garlapati",
   "license": "ISC"

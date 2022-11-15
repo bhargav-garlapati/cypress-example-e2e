@@ -1,6 +1,8 @@
 {
     "reporterEnabled": "mochawesome",
     "mochawesomeReporterOptions": {
+        "reportFilename": "[datetime]-[name]-report",
+        "timestamp": "longDate",
         "reportDir": "cypress/results/json",
         "overwrite": false,
         "html": false,

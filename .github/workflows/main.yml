@@ -1,0 +1,138 @@
+name: Cypress Example E2E
+on:
+  push:
+    branches:
+      - "master"
+  # Add this part if you want to schedule test rerun
+  # schedule:
+  # Runs once every 4 hours
+  # - cron: '0 18 * * *'
+
+jobs:
+  chrome-tests:
+    # timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # container:
+    #   image: cypress/browsers:node16.13.0-chrome95-ff94
+    #   options: --user 1001
+    strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving the Dashboard hanging ...
+      fail-fast: false
+      matrix:
+        # run copies of the current job in parallel
+        containers: [1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install a project with a clean slate
+        run: |
+          npm ci
+          $(npm bin)/cypress cache path
+          $(npm bin)/cypress cache list
+          $(npm bin)/cypress verify
+      - name: Cypress info
+        run: npx cypress info
+
+      - name: Node info
+        run: node -v
+
+      - name: "Smoke Tests - Chrome"
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          record: true
+          parallel: true
+          group: "Chrome"
+          spec: cypress/e2e/*cy.js
+        env:
+          ENV: "production"
+          # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+      - name: Save results folder
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            cypress/results
+            cypress.config.js
+            package.json
+            reporter-config.json
+            
+  post-tests-results:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: cypress/browsers:node16.13.0-chrome95-ff94
+    #   options: --user 1001
+    needs: chrome-tests
+    if: ${{ always() }}
+    steps: 
+     - name: Download the results folders
+       uses: actions/download-artifact@v3
+       with:
+          name: test-results
+
+     - name: Test Artifact download
+       run: ls -R
+  
+    #  - name: Creating a public directory and setting permissions
+    #    if: ${{ always() }}
+    #    run: |
+    #       mkdir public
+    #       cp -r cypress/videos public/videos
+
+     - name: Merge test results into one
+       if: ${{ always() }}
+       run: npm run report:merge
+
+     - name: Generate HTML report
+       if: ${{ always() }}
+       run: npm run report:generate
+
+     - name: Deploy report page
+       if: ${{ always() }}
+       uses: peaceiris/actions-gh-pages@v3
+       with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          
+    #  - name: "Cypress Email Results"
+    #    uses: cypress-io/github-action@v4
+    #    with:
+    #       runTests: false
+    #       config-file: email.config.js
+    #    env:
+    #       # email test results after the tests are finished
+    #       EMAIL_TO: ${{ secrets.EMAIL_TO }}
+    #       # pass SendGrid settings to the plugin via environment variables
+    #       SENDGRID_HOST: ${{ secrets.SENDGRID_HOST }}
+    #       SENDGRID_PORT: ${{ secrets.SENDGRID_PORT }}
+    #       SENDGRID_USER: ${{ secrets.SENDGRID_USER }}
+    #       SENDGRID_PASSWORD: ${{ secrets.SENDGRID_PASSWORD }}
+    #       SENDGRID_FROM: ${{ secrets.SENDGRID_FROM }}
+          
+     - name: Post Slack Notification
+       uses: 8398a7/action-slack@v3
+       with:
+          username: "HS-TELUS-E2E-REPORT"
+          status: custom
+          fields: workflow,message,commit,repo,ref,author
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}\n (${process.env.AS_MESSAGE})-(${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }}`,
+              }]
+            }
+       env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+       if: always() # Pick up events even if the job fails or is cancelled.
