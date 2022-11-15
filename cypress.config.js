@@ -1,7 +1,7 @@
 const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
-  // projectId: '',
+  projectId: 'rgy1pi',
   reporter: 'cypress-multi-reporters',
   reporterOptions: {
     configFile: 'reporter-config.json',
