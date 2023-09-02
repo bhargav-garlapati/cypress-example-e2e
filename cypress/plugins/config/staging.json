@@ -1,0 +1,4 @@
+{
+  "baseUrl":"http://the-internet.herokuapp.com/basic_auth",
+  "userAgent":"Cypress Staging"
+}

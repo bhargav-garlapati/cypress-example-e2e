@@ -2,7 +2,7 @@ name: Cypress Free Template
 on:
   push:
     branches:
-      - "master"
+      - "main"
   # Add this part if you want to schedule test rerun
   # schedule:
   # Runs once every 4 hours

@@ -23,9 +23,11 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
-      config.env.ENV = process.env.ENV || "production";
+      config.env.ENV = process.env.ENV || 'production';
       console.log(`Cypress running in ${config.env.ENV} environment`);
       const environmentConfig = require(`./cypress/plugins/config/${config.env.ENV}.json`);
+      // const getCompareSnapshotsPlugin = require('cypress-image-diff-js/dist/plugin');
+      // getCompareSnapshotsPlugin(on, config);
       return {
         ...config,
         ...environmentConfig,

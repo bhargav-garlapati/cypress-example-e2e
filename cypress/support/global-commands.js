@@ -7,6 +7,9 @@
  * @returns object - an empty object or object with username and password
  */
 
+// const compareSnapshotCommand = require("cypress-image-diff-js/dist/command");
+// compareSnapshotCommand({ disableTimersAndAnimations: false });
+
 const getStagingOpts = () => {
     const opts = {};
     const username = Cypress.env("BASIC_AUTH_USERNAME");
