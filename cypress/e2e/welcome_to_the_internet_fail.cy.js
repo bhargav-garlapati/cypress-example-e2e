@@ -1,4 +1,4 @@
-describe('Welcome to the-internet', () => {
+describe.skip('Welcome to the-internet', () => {
     
     it('Successfully loads the-internet page: Fail assertion', () => {
         cy.visitPage('/');
