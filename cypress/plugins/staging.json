@@ -1,0 +1,4 @@
+{
+  "baseUrl":"https://edge-functions-basic-auth-password.vercel.app",
+  "userAgent":"Cypress Staging"
+}

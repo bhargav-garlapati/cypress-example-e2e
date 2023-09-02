@@ -9,12 +9,11 @@ module.exports = defineConfig({
   chromeWebSecurity: false,
   viewportHeight: 800,
   viewportWidth: 1280,
-  numTestsKeptInMemory: 0,
+  // numTestsKeptInMemory: 0,
   // blockHosts: [ 
-  //   '*.google-analytics.com',
+  //   "*.adobedtm.com",
+  //   "*.googleadservices.com"
   // ],
-  // env: {
-  // },
   retries: {
     runMode: 2,
     openMode: 0,
@@ -24,11 +23,16 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
-      return require('./cypress/plugins/index.js')(on, config)
+      config.env.ENV = process.env.ENV || "production";
+      console.log(`Cypress running in ${config.env.ENV} environment`);
+      const environmentConfig = require(`./cypress/plugins/config/${config.env.ENV}.json`);
+      return {
+        ...config,
+        ...environmentConfig,
+      };
     },
   },
-})
-
+});
 
 
   

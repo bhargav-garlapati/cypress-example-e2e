@@ -1,23 +1,22 @@
 {
   "name": "cypress-example-e2e",
   "version": "1.0.0",
-  "description": "This a Cypress example E2E project using Github Actions",
+  "description": "This a Cypress example E2E project using Github Actions built by Bhargav Garlapati",
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-angular": "^11.0.0",
-    "@dwp/commitlint-config-base": "^4.0.0",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-angular": "^17.4.4",
     "ansi-regex": ">=5.0.1",
-    "commitizen": "^4.2.4",
-    "cypress": "^10.10.0",
+    "commitizen": "^4.3.0",
+    "cypress": "^13.1.0",
     "cypress-email-results": "^1.8.0",
-    "cypress-multi-reporters": "^1.4.0",
+    "cypress-multi-reporters": "^1.6.2",
     "cypress-wait-until": "^1.7.1",
     "cz-conventional-changelog": "^3.0.1",
-    "eslint": "8.17.0",
+    "eslint": "8.34.0",
     "eslint-plugin-cypress": "^2.12.1",
-    "eslint-plugin-react": "^7.30.0",
-    "husky": "^4.3.8",
-    "mocha": "^9.1.2",
+    "eslint-plugin-react": "^7.32.2",
+    "husky": "^8.0.0",
+    "mocha": "^10.2.0",
     "mochawesome": "^7.0.1"
   },
   "repository": {
@@ -41,7 +40,9 @@
     "report:merge": "npx --yes mochawesome-merge@4.2.1 cypress/results/json/*.json -o index.json",
     "report:generate": "npx mochawesome-report-generator@6.2.0 index.json --reportDir public --assetsDir public/assets --reportPageTitle index.html",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "cypress:staging": "ENV=staging npm run cypress:open",
+    "cypress:production": "ENV=production npm run cypress:open"
   },
   "author": "Bhargav Garlapati",
   "license": "ISC"
