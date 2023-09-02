@@ -41,12 +41,9 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Install a project with a clean slate
+      - name: Install project
         run: |
           npm ci
-          $(npm bin)/cypress cache path
-          $(npm bin)/cypress cache list
-          $(npm bin)/cypress verify
 
       - name: Echo the npm
         run: |
