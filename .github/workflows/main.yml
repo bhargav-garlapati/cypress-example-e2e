@@ -45,11 +45,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Echo the npm
-        run: |
-          echo $(npm bin)
-          ls $(npm bin)
-
       - name: Cypress info
         run: npx cypress info
 
