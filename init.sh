@@ -11,3 +11,6 @@ gcloud secrets versions access 1 --secret=cypress-environment-variables > cypres
 
 # Install packages
 npm install
+
+# To update the secret use the following command
+#gcloud secrets versions add cypress-environment-variables --data-file=cypress.env.json
