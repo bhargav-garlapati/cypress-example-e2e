@@ -1,0 +1,7 @@
+{
+  "basicAuth": "Basic Auth",
+  "basicAuthMessage": "Congratulations! You must have the proper credentials",
+  "welcomeToTheInternet": "Welcome to the not-internet",
+  "secureAreaMessage": "Welcome to the Secure Area. When you are done click logout below.",
+  "loginPageMessage": "Login Page"
+}

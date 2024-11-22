@@ -1,4 +1,5 @@
 describe('Welcome to the-internet', () => {
+    const data = require('../fixtures/content.json');
 
     it('Successfully loads the-internet login page', () => {
 
@@ -19,7 +20,7 @@ describe('Welcome to the-internet', () => {
 
         // Check welcome text
         cy.get('h4')
-            .contains('Welcome to the Secure Area. When you are done click logout below');
+            .contains(data.secureAreaMessage);
 
         // Click logout button
         cy.get('[href="/logout"]')
@@ -27,7 +28,7 @@ describe('Welcome to the-internet', () => {
 
         // Check Login page text
         cy.get('h2')
-            .contains('Login Page');
+            .contains(data.loginPageMessage);
         // cy.get('[name="q"]').compareSnapshot('googleTest', 0.2, { limit: 6, delay: 1000 });
     })
 })

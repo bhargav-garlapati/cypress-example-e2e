@@ -58,3 +58,19 @@ const getStagingOpts = () => {
       expect(rect.bottom).not.to.be.greaterThan(bottom);
     });
   });
+
+  Cypress.Commands.add("getByID", (selector, ...args) => {
+    return cy.get(`[id=${selector}]`, ...args);
+  });
+  
+  // Sending locators to the iframe
+  Cypress.Commands.add("sendToiframeLocator", (iframeId, cssLocator, value) => {
+    // Check if the iframe exists and is loaded
+    cy.get(`iframe${iframeId}`).should('exist');
+    cy.frameLoaded(`iframe${iframeId}`);
+    cy.iframe(`iframe${iframeId}`)
+      .find(cssLocator)
+      .type(value, { force: true, log: false, delay: 100 });
+    cy.get('body').click(); // click outside the iframe
+    cy.wait(1000);
+  });

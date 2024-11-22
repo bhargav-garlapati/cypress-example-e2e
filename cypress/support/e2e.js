@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import "./global-commands";
+import 'cypress-iframe';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

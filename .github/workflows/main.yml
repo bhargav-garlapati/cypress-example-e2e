@@ -20,12 +20,12 @@ on:
   # - cron: '0 6,18 * * 6,0'
 
 jobs:
-  chrome-tests:
+  cypress-tests:
+    name: E2E Test Run
     # timeout-minutes: 15
-    runs-on: ubuntu-latest
-    # container:
-    #   image: cypress/browsers:latest
-    #   options: --user 1001
+    runs-on: ubuntu-22.04
+    container:
+      image: cypress/browsers:latest
     strategy:
       # when one test fails, DO NOT cancel the other
       # containers, because this will kill Cypress processes
@@ -36,10 +36,10 @@ jobs:
         containers: [1]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
@@ -55,7 +55,7 @@ jobs:
         run: node -v
 
       - name: "Smoke Tests - Chrome"
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           browser: chrome
           # Enable the below flags only after you configure the project with Cypress cloud
@@ -95,7 +95,7 @@ jobs:
     # container:
     #   image: cypress/browsers:node16.13.0-chrome95-ff94
     #   options: --user 1001
-    needs: chrome-tests
+    needs: cypress-tests
     if: ${{ always() }}
     steps: 
      - name: Download the results folders
@@ -122,7 +122,7 @@ jobs:
 
      - name: Deploy report page
        if: ${{ always() }}
-       uses: peaceiris/actions-gh-pages@v3
+       uses: peaceiris/actions-gh-pages@v4
        with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
