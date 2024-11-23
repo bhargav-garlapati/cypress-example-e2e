@@ -17,6 +17,8 @@
 import "./global-commands";
 import 'cypress-iframe';
 import '@percy/cypress';
+import 'cypress-axe';
+
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

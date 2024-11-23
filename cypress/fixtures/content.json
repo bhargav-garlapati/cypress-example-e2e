@@ -10,5 +10,7 @@
   "checkboxes": "Checkboxes",
   "contextMenu": "Context Menu",
   "dragDrop": "Drag and Drop",
-  "dynamicContent": "Dynamic Content"
+  "dynamicContent": "Dynamic Content",
+  "dynamicControls": "Dynamic Controls",
+  "floatingMenu": "Floating Menu"
 }
