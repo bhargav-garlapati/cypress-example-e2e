@@ -25,7 +25,6 @@ To set up this project locally:
 
 If you encounter access issues, please create a file named `cypress.env.json` in the root directory of the repository locally, and add the following test secrets:
 
-      ```bash
       {
          "BASIC_AUTH_USERNAME": "admin",
          "BASIC_AUTH_PASSWORD": "admin",
