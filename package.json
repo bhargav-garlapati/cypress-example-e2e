@@ -20,9 +20,9 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-react": "^7.32.2",
     "husky": "^8.0.0",
+    "k6": "^0.0.0",
     "mocha": "^10.2.0",
-    "mochawesome": "^7.0.1",
-    "k6": "^0.0.0"
+    "mochawesome": "^7.0.1"
   },
   "repository": {
     "type": "git",
@@ -50,5 +50,8 @@
     "cypress:production": "ENV=production npm run cypress:open"
   },
   "author": "Bhargav Garlapati",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@4tw/cypress-drag-drop": "^2.2.5"
+  }
 }

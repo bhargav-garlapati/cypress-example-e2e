@@ -1,7 +1,13 @@
 {
-  "basicAuth": "Basic Auth",
-  "basicAuthMessage": "Congratulations! You must have the proper credentials",
   "welcomeToTheInternet": "Welcome to the not-internet",
   "secureAreaMessage": "Welcome to the Secure Area. When you are done click logout below.",
-  "loginPageMessage": "Login Page"
+  "loginPageMessage": "Login Page",
+  "abtest1": "A/B Test Variation 1",
+  "abtest2": "No A/B Test",
+  "addRemoveElements": "Add/Remove Elements",
+  "basicAuth": "Basic Auth",
+  "basicAuthMessage": "Congratulations! You must have the proper credentials",
+  "checkboxes": "Checkboxes",
+  "contextMenu": "Context Menu",
+  "dragDrop": "Drag and Drop"
 }

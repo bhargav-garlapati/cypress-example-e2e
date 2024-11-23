@@ -3,8 +3,12 @@ describe('Basic Auth Testing', () => {
 
     it('Successfully loads the-internet.herokuapp.com and test basic auth', () => {
         cy.visitPage('/basic_auth');
+
+        // Check h3 text
         cy.get('h3')
-        .contains(data.basicAuth)
+        .contains(data.basicAuth);
+
+        // Check basic auth message
         cy.get('p')
         .contains(data.basicAuthMessage);
     })

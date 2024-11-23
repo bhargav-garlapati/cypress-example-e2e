@@ -1,4 +1,4 @@
 {
-  "baseUrl":"http://the-internet.herokuapp.com/",
+  "baseUrl":"https://the-internet.herokuapp.com",
   "userAgent":"Cypress Production"
 }
