@@ -74,3 +74,10 @@ const getStagingOpts = () => {
     cy.get('body').click(); // click outside the iframe
     cy.wait(1000);
   });
+
+  Cypress.Commands.add('dragAndDrop', (source, destination) => {
+    const dataTransfer = new DataTransfer();
+    cy.get(source).trigger('dragstart', { dataTransfer });
+    cy.get(destination).trigger('drop', { dataTransfer });
+    
+  });
