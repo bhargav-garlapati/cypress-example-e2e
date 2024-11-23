@@ -3,7 +3,7 @@ describe('Welcome to the-internet', () => {
 
     it('Handle JS Alert', () => {
 
-        // Visit login page
+        // Visit context_menu page
         cy.visitPage('/context_menu');
 
         // Check h3 text
