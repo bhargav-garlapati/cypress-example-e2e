@@ -13,5 +13,6 @@
   "dragDrop": "Drag and Drop",
   "dynamicContent": "Dynamic Content",
   "dynamicControls": "Dynamic Controls",
-  "floatingMenu": "Floating Menu"
+  "floatingMenu": "Floating Menu",
+  "iframeHeading": "An iFrame containing the TinyMCE WYSIWYG Editor"
 }

@@ -64,16 +64,30 @@ const getStagingOpts = () => {
   });
   
   // Sending locators to the iframe
-  Cypress.Commands.add("sendToiframeLocator", (iframeId, cssLocator, value) => {
-    // Check if the iframe exists and is loaded
+  Cypress.Commands.add("iframeLocator", (iframeId, cssLocator, value) => {
+    // Ensure iframe exists and is loaded
     cy.get(`iframe${iframeId}`).should('exist');
     cy.frameLoaded(`iframe${iframeId}`);
+
+    // Interact with the iframe's content
     cy.iframe(`iframe${iframeId}`)
       .find(cssLocator)
-      .type(value, { force: true, log: false, delay: 100 });
-    cy.get('body').click(); // click outside the iframe
+      .click();
+
+    // If needed, you can use .contains() instead to find specific text
+    // cy.iframe(`iframe${iframeId}`).find(cssLocator)
+    //   .contains(value, { force: true, log: false, delay: 100 });
+
+     // If needed, you can use .type text instead to find specific text
+    // cy.iframe(`iframe${iframeId}`).find(cssLocator)
+    //   .type(value, { force: true, log: false, delay: 100 });
+
+    // Click outside the iframe to remove focus
+    cy.get('body').click();
+
+    // Optionally, wait for a short period
     cy.wait(1000);
-  });
+});
 
   Cypress.Commands.add('dragAndDrop', (source, destination) => {
     const dataTransfer = new DataTransfer();
