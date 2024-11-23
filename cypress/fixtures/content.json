@@ -9,5 +9,6 @@
   "basicAuthMessage": "Congratulations! You must have the proper credentials",
   "checkboxes": "Checkboxes",
   "contextMenu": "Context Menu",
-  "dragDrop": "Drag and Drop"
+  "dragDrop": "Drag and Drop",
+  "dynamicContent": "Dynamic Content"
 }

@@ -71,6 +71,13 @@ jobs:
           # determine the unique run id necessary to re-run the checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           
+          # Percy token
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
+          #LambdaTest SmartUI Token
+          LT_USERNAME: ${{ secrets.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+          
           # Pre-production authentication 
           CYPRESS_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
           CYPRESS_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}

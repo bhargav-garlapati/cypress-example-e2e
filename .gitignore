@@ -5,4 +5,5 @@ cypress/screenshots/*
 cypress/videos/*
 .npmrc
 .DS_Store
-cypress/.DS_Store
+.env
+lambdatest_run.json
