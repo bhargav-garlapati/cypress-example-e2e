@@ -14,5 +14,7 @@
   "dynamicContent": "Dynamic Content",
   "dynamicControls": "Dynamic Controls",
   "floatingMenu": "Floating Menu",
-  "iframeHeading": "An iFrame containing the TinyMCE WYSIWYG Editor"
+  "iframeHeading": "An iFrame containing the TinyMCE WYSIWYG Editor",
+  "fileUploader": "File Uploader",
+  "fileUploaded": "File Uploaded!"
 }

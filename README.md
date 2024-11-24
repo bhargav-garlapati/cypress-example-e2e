@@ -42,16 +42,17 @@ Next, install dependencies `npm install`
 The tests are automatically triggered on every push request, with the results displayed on GitHub Pages.
 
  ## Test Demos
-- A/B Variation
-- Accessibility
-- Add and Remove Elements
-- Basic Auth Test
-- Interacting with Checkboxes
-- Drag and Drop Items
-- Handling Iframes
-- Handling JS Alerts, Confirm, and Prompt
-- Login Flow test
-- UI Visual Testing using Percy (smart UI, Applitools Eyes are coming soon...)
+    - A/B Variation
+    - Accessibility
+    - Add and Remove Elements
+    - Basic Auth Test
+    - Interacting with Checkboxes
+    - Drag and Drop Items
+    - Handling Iframes
+    - Handling JS Alerts, Confirm, and Prompt
+    - Login Flow test
+    - Upload file
+    - UI Visual Testing using Percy (smart UI, Applitools Eyes are coming soon...)
 Each test can be run individually or as part of the complete test suite.
 
 You can view the test execution results here:
