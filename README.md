@@ -52,7 +52,7 @@ The tests are automatically triggered on every push request, with the results di
     - Handling JS Alerts, Confirm, and Prompt
     - Login Flow test
     - Upload file
-    - UI Visual Testing using Percy & LambdaTest Smart UI (Applitools Eyes are coming soon...)
+    - UI Visual Testing using Percy & LambdaTest Smart UI (Applitools Eyes coming soon...)
 Each test can be run individually or as part of the complete test suite.
 
 You can view the test execution results here:
