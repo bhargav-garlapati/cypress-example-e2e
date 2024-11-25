@@ -57,7 +57,7 @@
     "cypress:staging": "ENV=staging npm run cypress:open",
     "cypress:production": "ENV=production npm run cypress:open",
     "cypress:percy": "npx percy exec -- cypress run --spec cypress/e2e/ui_test_using_dynamic_content.cy.js",
-    "cypress:lambda": "npx smartui --config smartui-web.json exec --fetch-results smart-ui-results.json -- npx cypress run --spec cypress/e2e/lambdatest_ui_test_using_dynamic_content.cy.js --headed"
+    "cypress:lambda": "npx smartui --config smartui-web.json exec --fetch-results smart-ui-results.json -- npx cypress run --spec cypress/e2e/smart-ui-tests/lambdatest_ui_test_using_dynamic_content.cy.js --headed"
   },
   "author": "Bhargav Garlapati",
   "license": "ISC"
