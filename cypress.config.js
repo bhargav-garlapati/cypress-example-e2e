@@ -23,6 +23,13 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
+      // on task event to log messages is required for the @lambdatest/cypress-driver plugin to work
+      on('task', {
+        log(message) {
+            console.log(message);
+            return null;
+        },
+      });
       config.env.ENV = process.env.ENV || 'production';
       console.log(`Cypress running in ${config.env.ENV} environment`);
       const environmentConfig = require(`./cypress/plugins/config/${config.env.ENV}.json`);
@@ -35,6 +42,3 @@ module.exports = defineConfig({
     },
   },
 });
-
-
-  

@@ -7,12 +7,13 @@
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-angular": "^17.4.4",
     "@cypress/grep": "^4.0.2",
-    "@lambdatest/smartui-cli": "^4.0.10",
+    "@lambdatest/cypress-driver": "^1.0.8",
+    "@lambdatest/smartui-cli": "^4.0.11",
     "@percy/cli": "^1.30.2",
     "@percy/cypress": "^3.1.3-beta.0",
     "ansi-regex": ">=5.0.1",
     "commitizen": "^4.3.0",
-    "cypress": "^13.15.1",
+    "cypress": "^13.16.0",
     "cypress-axe": "^1.5.0",
     "cypress-email-results": "^1.0.0",
     "cypress-iframe": "^1.0.1",
@@ -56,7 +57,7 @@
     "cypress:staging": "ENV=staging npm run cypress:open",
     "cypress:production": "ENV=production npm run cypress:open",
     "cypress:percy": "npx percy exec -- cypress run --spec cypress/e2e/ui_test_using_dynamic_content.cy.js",
-    "cypress:lambda": "lambdatest-cypress run --lcf lambdatest-config.json"
+    "cypress:lambda": "npx smartui --config smartui-web.json exec --fetch-results smart-ui-results.json -- npx cypress run --spec cypress/e2e/lambdatest_ui_test_using_dynamic_content.cy.js --headed"
   },
   "author": "Bhargav Garlapati",
   "license": "ISC"
