@@ -1,0 +1,165 @@
+name: Smart UI Test
+on:
+  # Manual triggers with workflow_dispatch
+  workflow_dispatch:
+    
+  push:
+    branches:
+      - "main"
+  # Add this part if you want to schedule test rerun
+  # schedule:
+  # Runs once every 4 hours
+  # - cron: '0 18 * * *'
+  # Runs every 2 hours
+  # - cron: '0 */2 * * *'
+  # Runs from 9AM to 5PM PST every 2 hours and one last run at 10PM on weekdays.
+  # Total 6,732 runs approx per month
+  # - cron: '0 1,6,17,19,21,23 * * 1-5'
+  # Runs at 10AM & 10PM PST on weekends.
+  # Total 816 runs approx per month
+  # - cron: '0 6,18 * * 6,0'
+
+jobs:
+  cypress-tests:
+    name: E2E Test Run
+    # timeout-minutes: 15
+    runs-on: ubuntu-22.04
+    container:
+      image: cypress/browsers:latest
+    strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving the Dashboard hanging ...
+      fail-fast: false
+      matrix:
+        # run copies of the current job in parallel
+        containers: [1]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install project
+        run: |
+          npm ci
+
+      - name: Cypress info
+        run: npx cypress info
+
+      - name: Node info
+        run: node -v
+
+      - name: "Smoke Tests - Chrome"
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          # Enable the below flags only after you configure the project with Cypress cloud
+          command: npm run cypress:lambda
+        env:
+          ENV: "production"
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          
+          # Percy token
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
+          #LambdaTest SmartUI Token
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          
+          # Pre-production authentication 
+          CYPRESS_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+          CYPRESS_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+          
+          #Login info
+          CYPRESS_USERNAME: ${{ secrets.USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Save results folder
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            cypress/results
+            cypress.config.js
+            package.json
+            reporter-config.json
+            
+  post-tests-results:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: cypress/browsers:node16.13.0-chrome95-ff94
+    #   options: --user 1001
+    needs: cypress-tests
+    if: ${{ always() }}
+    steps: 
+     - name: Download the results folders
+       uses: actions/download-artifact@v3
+       with:
+          name: test-results
+
+     - name: Test Artifact download
+       run: ls -R
+  
+    #  - name: Creating a public directory and setting permissions
+    #    if: ${{ always() }}
+    #    run: |
+    #       mkdir public
+    #       cp -r cypress/videos public/videos
+
+     - name: Merge test results into one
+       if: ${{ always() }}
+       run: npm run report:merge
+
+     - name: Generate HTML report
+       if: ${{ always() }}
+       run: npm run report:generate
+
+     - name: Deploy report page
+       if: ${{ always() }}
+       uses: peaceiris/actions-gh-pages@v4
+       with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          
+    #  - name: "Cypress Email Results"
+    #    uses: cypress-io/github-action@v4
+    #    with:
+    #       runTests: false
+    #       config-file: email.config.js
+    #    env:
+    #       # email test results after the tests are finished
+    #       EMAIL_TO: ${{ secrets.EMAIL_TO }}
+    #       # pass SendGrid settings to the plugin via environment variables
+    #       SENDGRID_HOST: ${{ secrets.SENDGRID_HOST }}
+    #       SENDGRID_PORT: ${{ secrets.SENDGRID_PORT }}
+    #       SENDGRID_USER: ${{ secrets.SENDGRID_USER }}
+    #       SENDGRID_PASSWORD: ${{ secrets.SENDGRID_PASSWORD }}
+    #       SENDGRID_FROM: ${{ secrets.SENDGRID_FROM }}
+          
+    #  - name: Post Slack Notification
+    #    uses: 8398a7/action-slack@v3
+    #    with:
+    #       username: "CYPRESS-E2E-REPORT"
+    #       status: custom
+    #       fields: workflow,message,commit,repo,ref,author
+    #       custom_payload: |
+    #         {
+    #           attachments: [{
+    #             color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+    #             text: `${process.env.AS_WORKFLOW}\n (${process.env.AS_MESSAGE})-(${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }}`,
+    #           }]
+    #         }
+    #    env:
+    #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    #    if: always() # Pick up events even if the job fails or is cancelled.

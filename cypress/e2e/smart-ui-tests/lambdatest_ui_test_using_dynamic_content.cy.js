@@ -7,7 +7,7 @@
 
 
 describe('Welcome to the-internet', () => {
-    const data = require('../fixtures/content.json');
+    const data = require('../../fixtures/content.json');
 
     it('UI Test using Dynamic content 1', () => {
 
