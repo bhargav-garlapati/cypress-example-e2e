@@ -1,0 +1,26 @@
+{
+   "lambdatest_auth": {
+      "username": "bhargavk.garlapati",
+      "access_key": "mgoSYSnpLRh474YyjiTl1EQKwKXubFme1M6wHbTcSnVpMVILV1"
+   },
+   "browsers": [{
+        "browser": "Chrome",
+        "versions": ["130.0"],
+        "platform": "Windows 10"
+  }],
+   "run_settings": {
+      "reporter_config_file": "reporter-config.json",
+      "specs": "cypress/e2e/lambdatest_ui_test_using_dynamic_content.cy.js",
+      "ignore_files": "",
+      "feature_file_suppport": false,
+      "network": false,
+      "headless": false,
+      "npm_dependencies": {
+         "cypress": "^13.15.1"
+      },
+      "parallels": 1,
+      "smart_ui": {
+        "project": "smart_ui_cypress_example_e2e"
+      }
+   }
+}
