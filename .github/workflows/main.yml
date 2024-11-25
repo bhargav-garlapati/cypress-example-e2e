@@ -3,9 +3,9 @@ on:
   # Manual triggers with workflow_dispatch
   workflow_dispatch:
     
-  push:
-    branches:
-      - "main"
+  # push:
+  #   branches:
+  #     - "main"
   # Add this part if you want to schedule test rerun
   # schedule:
   # Runs once every 4 hours
