@@ -75,8 +75,7 @@ jobs:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
           #LambdaTest SmartUI Token
-          LT_USERNAME: ${{ secrets.LT_USERNAME }}
-          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
           
           # Pre-production authentication 
           CYPRESS_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
