@@ -3,7 +3,7 @@ describe('Welcome to the-internet', () => {
 
     it('A/B Test Variation', () => {
 
-        // Visit login page
+        // Visit abtest page
         cy.visitPage('/abtest');
 
         // Check h3 text

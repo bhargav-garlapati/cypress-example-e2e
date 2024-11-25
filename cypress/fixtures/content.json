@@ -9,6 +9,12 @@
   "basicAuthMessage": "Congratulations! You must have the proper credentials",
   "checkboxes": "Checkboxes",
   "contextMenu": "Context Menu",
+  "javaScriptAlerts": "JavaScript Alerts",
   "dragDrop": "Drag and Drop",
-  "dynamicContent": "Dynamic Content"
+  "dynamicContent": "Dynamic Content",
+  "dynamicControls": "Dynamic Controls",
+  "floatingMenu": "Floating Menu",
+  "iframeHeading": "An iFrame containing the TinyMCE WYSIWYG Editor",
+  "fileUploader": "File Uploader",
+  "fileUploaded": "File Uploaded!"
 }

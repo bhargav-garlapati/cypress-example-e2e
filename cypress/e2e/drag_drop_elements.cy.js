@@ -3,7 +3,7 @@ describe('Welcome to the-internet', () => {
 
     it('Drag and Drop elements', () => {
 
-        // Visit login page
+        // Visit drag_and_drop page
         cy.visitPage('/drag_and_drop');
 
         // Check h3 text

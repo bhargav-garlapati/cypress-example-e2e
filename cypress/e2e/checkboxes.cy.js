@@ -3,7 +3,7 @@ describe('Welcome to the-internet', () => {
 
     it('Checkboxes', () => {
 
-        // Visit login page
+        // Visit checkboxes page
         cy.visitPage('/checkboxes');
 
         // Check h3 text

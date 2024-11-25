@@ -4,7 +4,7 @@ describe('Welcome to the-internet', () => {
     it('Add and Remove elements on the page', () => {
 
         let times = 7;
-        // Visit login page
+        // Visit add_remove_elements page
         cy.visitPage('/add_remove_elements/');
 
         cy.get('h3')

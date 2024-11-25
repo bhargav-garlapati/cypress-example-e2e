@@ -13,6 +13,7 @@
     "ansi-regex": ">=5.0.1",
     "commitizen": "^4.3.0",
     "cypress": "^13.15.1",
+    "cypress-axe": "^1.5.0",
     "cypress-email-results": "^1.0.0",
     "cypress-iframe": "^1.0.1",
     "cypress-multi-reporters": "^1.6.2",
