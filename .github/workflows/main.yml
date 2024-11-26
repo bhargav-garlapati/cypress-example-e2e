@@ -54,7 +54,7 @@ jobs:
       - name: Node info
         run: node -v
 
-      - name: "Smoke Tests - Chrome"
+      - name: "Demo Tests"
         uses: cypress-io/github-action@v6
         with:
           browser: chrome

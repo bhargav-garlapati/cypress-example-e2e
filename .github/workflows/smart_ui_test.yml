@@ -48,12 +48,10 @@ jobs:
         run: |
           npm ci
 
-      - name: "Smoke Tests - Chrome"
+      - name: "Smart UI"
         run: npm run cypress:lambda
         env:
           ENV: "production"
-          BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
-          GITHUB_SHA: ${{ github.sha }}
 
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
