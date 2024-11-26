@@ -24,8 +24,6 @@ jobs:
     name: E2E Test Run
     timeout-minutes: 30
     runs-on: ubuntu-22.04
-    container:
-      image: cypress/browsers:latest
     strategy:
       # when one test fails, DO NOT cancel the other
       # containers, because this will kill Cypress processes
@@ -50,17 +48,8 @@ jobs:
         run: |
           npm ci
 
-      - name: Cypress info
-        run: npx cypress info
-
-      - name: Node info
-        run: node -v
-
       - name: "Smoke Tests - Chrome"
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          command: npm run cypress:lambda
+        run: npm run cypress:lambda
         env:
           ENV: "production"
           BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
