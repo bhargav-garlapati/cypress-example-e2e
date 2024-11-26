@@ -22,7 +22,7 @@ on:
 jobs:
   cypress-smart-ui-tests:
     name: E2E Test Run
-    # timeout-minutes: 15
+    timeout-minutes: 30
     runs-on: ubuntu-22.04
     container:
       image: cypress/browsers:latest
@@ -64,6 +64,8 @@ jobs:
         env:
           ENV: "production"
           BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # Recommended: pass the GitHub token lets this action correctly
