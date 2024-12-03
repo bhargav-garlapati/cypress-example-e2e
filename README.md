@@ -37,7 +37,7 @@ Next, install dependencies `npm install`
       
 3. Run Tests 
     ```bash
-   npm run cypress:production
+   npm run cy:production
 
 The tests are automatically triggered on every push request, with the results displayed on GitHub Pages.
 
