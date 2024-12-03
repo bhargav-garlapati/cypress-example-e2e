@@ -52,12 +52,12 @@
     "lint:fix": "npm run lint -- --fix",
     "report:merge": "npx --yes mochawesome-merge@4.2.1 cypress/results/json/*.json -o index.json",
     "report:generate": "npx mochawesome-report-generator@6.2.0 index.json --reportDir public --assetsDir public/assets --reportPageTitle index.html",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
-    "cypress:staging": "ENV=staging npm run cypress:open",
-    "cypress:production": "ENV=production npm run cypress:open",
-    "cypress:percy": "npx percy exec -- cypress run --spec cypress/e2e/ui_test_using_dynamic_content.cy.js",
-    "cypress:lambda": "npx smartui --config smartui-web.json exec --fetch-results smart-ui-results.json -- npx cypress run --spec cypress/e2e/smart-ui-tests/lambdatest_ui_test_using_dynamic_content.cy.js --headed"
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:staging": "ENV=staging npm run cy:open",
+    "cy:production": "ENV=production npm run cy:open",
+    "cy:percy": "npx percy exec -- cypress run --spec cypress/e2e/ui_test_using_dynamic_content.cy.js",
+    "cy:lambda": "npx smartui --config smartui-web.json exec --fetch-results smart-ui-results.json -- npx cypress run --spec cypress/e2e/smart-ui-tests/lambdatest_ui_test_using_dynamic_content.cy.js --headed"
   },
   "author": "Bhargav Garlapati",
   "license": "ISC"
