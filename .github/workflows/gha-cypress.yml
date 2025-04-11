@@ -1,5 +1,10 @@
 name: Cypress Tests on GH Actions
-# This workflow will run Cypress tests on GitHub Actions
+# This workflow will run Cypress tests on GitHub Actions and leverages GH Actions secrets for sensitive data.
+# It will also generate a report and deploy it to GitHub Pages.
+# parallelize the tests using multiple containers.
+# This workflow is triggered manually and allows you to specify the environment, test specs, and tags.
+# It uses the cypress-io/github-action to run the tests and the peaceiris/actions-gh-pages action to deploy the report.
+
 on:
   # Manual trigger only
   workflow_dispatch:
@@ -71,9 +76,20 @@ jobs:
           ENV: ${{ github.event.inputs.environment || 'production' }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Percy token
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          #LambdaTest SmartUI Token
           PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          # Pre-production authentication 
+          CYPRESS_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
+          CYPRESS_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+          #Login info
+          CYPRESS_USERNAME: ${{ secrets.USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.PASSWORD }}
+          # Tags
           CYPRESS_grepTags: ${{ github.event.inputs.tags || '' }}
 
       - name: Save results folder
