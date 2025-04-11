@@ -1,0 +1,92 @@
+name: Cypress Tests on GCP
+
+on:
+  # Manual trigger only
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      specs:
+        description: 'Test specs to run (comma-separated or "all")'
+        required: true
+        default: 'all'
+        type: string
+
+jobs:
+  trigger-gcp-tests:
+    name: Trigger GCP Cloud Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: cypress-example-e2e-397816
+
+      - name: Trigger Cloud Build
+        id: cloud-build
+        run: |
+          BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }} \
+            --async --format='value(id)')
+          echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+          echo "Triggered Cloud Build with ID: $BUILD_ID"
+
+      - name: Wait for Cloud Build to complete
+        run: |
+          gcloud builds log --stream ${{ steps.cloud-build.outputs.build_id }}
+
+      - name: Download test results from GCS
+        run: |
+          mkdir -p cypress/results
+          gsutil -m cp -r gs://cypress-example-e2e-results/${{ steps.cloud-build.outputs.build_id }}/* ./
+
+      - name: Save results folder
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            cypress/results
+            cypress.config.js
+            package.json
+            reporter-config.json
+
+  post-tests-results:
+    runs-on: ubuntu-latest
+    needs: trigger-gcp-tests
+    if: ${{ always() }}
+    steps: 
+      - name: Download the results folders
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results
+
+      - name: Merge test results into one
+        if: ${{ always() }}
+        run: npm run report:merge
+
+      - name: Generate HTML report
+        if: ${{ always() }}
+        run: npm run report:generate
+
+      - name: Deploy report page
+        if: ${{ always() }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"

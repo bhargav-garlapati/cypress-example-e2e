@@ -1,0 +1,70 @@
+steps:
+  # Pull the Cypress Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['pull', 'cypress/browsers:latest']
+
+  # Create a container from the Cypress image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'run', 
+      '--name', 'cypress-container', 
+      '-d', 
+      '-v', '/workspace:/workspace', 
+      'cypress/browsers:latest', 
+      'tail', '-f', '/dev/null'
+    ]
+
+  # Install dependencies
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'exec', 
+      'cypress-container', 
+      'bash', 
+      '-c', 
+      'cd /workspace && npm ci'
+    ]
+
+  # Get secrets from Secret Manager
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=cypress-environment-variables > /workspace/cypress.env.json
+
+  # Run Cypress tests
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        SPECS_ARG=""
+        if [ "$_SPECS" != "all" ]; then
+          SPECS_ARG="--spec $_SPECS"
+        else
+          SPECS_ARG="--spec cypress/e2e/*cy.js"
+        fi
+        
+        docker exec cypress-container bash -c "cd /workspace && ENV=$_ENV npx cypress run $SPECS_ARG --browser chrome --headless"
+
+  # Create results directory if it doesn't exist
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker exec cypress-container bash -c "cd /workspace && mkdir -p cypress/results"
+
+  # Upload results to GCS
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['-m', 'cp', '-r', 'cypress/results', 'gs://cypress-example-e2e-results/$BUILD_ID/']
+
+  # Clean up the container
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['rm', '-f', 'cypress-container']
+
+substitutions:
+  _ENV: 'production'  # Default environment
+  _SPECS: 'all'       # Default specs to run
+
+timeout: 1800s  # 30 minutes

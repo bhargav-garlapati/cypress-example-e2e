@@ -7,3 +7,5 @@ cypress/videos/*
 .DS_Store
 .env
 lambdatest_run.json
+public/
+index.json
