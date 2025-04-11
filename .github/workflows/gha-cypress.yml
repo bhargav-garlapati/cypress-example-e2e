@@ -1,4 +1,5 @@
-name: Cypress Example E2E
+name: Cypress Tests on GH Actions
+# This workflow will run Cypress tests on GitHub Actions
 on:
   # Manual triggers with workflow_dispatch
   workflow_dispatch:
