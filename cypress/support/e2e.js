@@ -19,6 +19,7 @@ import 'cypress-iframe';
 import '@percy/cypress';
 import 'cypress-axe';
 import '@lambdatest/cypress-driver';
+import '@cypress/grep';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

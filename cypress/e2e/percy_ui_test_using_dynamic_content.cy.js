@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('UI Test using Dynamic content', () => {
+    it('UI Test using Dynamic content', 
+       { tags: ['visual-testing', 'percy'] }, 
+       () => {
 
         // Visit dynamic_content page
         cy.visitPage('/dynamic_content?with_content=static');

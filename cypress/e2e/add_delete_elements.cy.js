@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Add and Remove elements on the page', () => {
+    it('Add and Remove elements on the page', 
+       { tags: ['dom-manipulation', 'ui'] }, 
+       () => {
 
         let times = 7;
         // Visit add_remove_elements page

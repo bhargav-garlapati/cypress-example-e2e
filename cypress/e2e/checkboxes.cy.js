@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Checkboxes', () => {
+    it('Checkboxes', 
+       { tags: ['form-elements', 'ui'] }, 
+       () => {
 
         // Visit checkboxes page
         cy.visitPage('/checkboxes');

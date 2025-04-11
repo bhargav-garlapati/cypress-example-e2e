@@ -1,7 +1,9 @@
 describe('Basic Auth Testing', () => {
     const data = require('../fixtures/content.json');
 
-    it('Successfully loads the-internet.herokuapp.com and test basic auth', () => {
+    it('Successfully loads the-internet.herokuapp.com and test basic auth', 
+       { tags: ['authentication', 'security'] }, 
+       () => {
 
         // Visit basic_auth page
         cy.visitPage('/basic_auth');

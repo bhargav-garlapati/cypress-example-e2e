@@ -9,7 +9,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../../fixtures/content.json');
 
-    it('UI Test using Dynamic content 1', () => {
+    it('UI Test using Dynamic content 1', 
+       { tags: ['visual-testing', 'smartui'] }, 
+       () => {
 
         // Visit dynamic_content page
         cy.visitPage('/dynamic_content?with_content=static');

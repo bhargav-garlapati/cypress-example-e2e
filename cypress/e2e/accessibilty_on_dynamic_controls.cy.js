@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Accessibility on dynamic_controls h4 tag - Pass', () => {
+    it('Accessibility on dynamic_controls h4 tag - Pass', 
+       { tags: ['accessibility', 'ui'] }, 
+       () => {
 
         // Visit dynamicControls page
         cy.visitPage('/dynamic_controls');
@@ -21,7 +23,9 @@ describe('Welcome to the-internet', () => {
         });
     })
 
-    it('Accessibility on dynamic_controls on p tag - Pass', () => {
+    it('Accessibility on dynamic_controls on p tag - Pass', 
+       { tags: ['accessibility', 'ui'] }, 
+       () => {
 
         // Visit dynamicControls page
         cy.visitPage('/dynamic_controls');
@@ -42,7 +46,9 @@ describe('Welcome to the-internet', () => {
 
     })
 
-    it.skip('Accessibility on dynamic_controls on form - Fail', () => {
+    it.skip('Accessibility on dynamic_controls on form - Fail', 
+       { tags: ['accessibility', 'form'] }, 
+       () => {
 
         // Visit dynamicControls page
         cy.visitPage('/dynamic_controls');

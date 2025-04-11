@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Successfully loads the-internet login page', () => {
+    it('Successfully loads the-internet login page', 
+       { tags: ['authentication', 'login'] }, 
+       () => {
 
         // Visit login page
         cy.visitPage('/login');

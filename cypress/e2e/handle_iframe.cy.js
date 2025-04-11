@@ -4,7 +4,9 @@ describe('Welcome to the-internet', () => {
     // This code is to handle iframes is correct. 
     // However, herokuapp iframe example reached its billing limit. 
     // So this test case will fail!
-    it.skip('Handle Iframes', () => {
+    it.skip('Handle Iframes', 
+       { tags: ['iframe', 'ui'] }, 
+       () => {
 
         // Visit iframe page
         cy.visitPage('/iframe');

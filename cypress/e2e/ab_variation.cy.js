@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('A/B Test Variation', () => {
+    it('A/B Test Variation', 
+       { tags: ['ab-testing', 'ui'] }, 
+       () => {
 
         // Visit abtest page
         cy.visitPage('/abtest');

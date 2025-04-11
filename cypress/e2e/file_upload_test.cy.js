@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('File upload test demo', () => {
+    it('File upload test demo', 
+       { tags: ['file-operations', 'form'] }, 
+       () => {
 
         // Visit upload page
         cy.visitPage('/upload');

@@ -1,7 +1,9 @@
 describe.skip('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Successfully loads the-internet page: Fail assertion', () => {
+    it('Successfully loads the-internet page: Fail assertion', 
+       { tags: ['negative-test', 'error'] }, 
+       () => {
 
         // Visit the-internet page
         cy.visitPage('/');

@@ -1,7 +1,9 @@
 describe('Welcome to the-internet', () => {
     const data = require('../fixtures/content.json');
 
-    it('Handle Window Alert', () => {
+    it('Handle Window Alert', 
+       { tags: ['alerts', 'ui'] }, 
+       () => {
 
         // Visit context_menu page
         cy.visitPage('/context_menu');
@@ -19,7 +21,9 @@ describe('Welcome to the-internet', () => {
         })
     })
 
-    it('Handle jsAlert Alert', () => {
+    it('Handle jsAlert Alert', 
+       { tags: ['alerts', 'ui'] }, 
+       () => {
 
         // Visit javascript_alerts page
         cy.visitPage('/javascript_alerts');
@@ -41,7 +45,9 @@ describe('Welcome to the-internet', () => {
         cy.get('#result').contains('You successfully clicked an alert');
     })
 
-    it('Handle jsConfirm Alert', () => {
+    it('Handle jsConfirm Alert', 
+       { tags: ['alerts', 'ui'] }, 
+       () => {
 
         // Visit javascript_alerts page
         cy.visitPage('/javascript_alerts');
@@ -63,7 +69,9 @@ describe('Welcome to the-internet', () => {
         cy.get('#result').contains('You clicked: Ok');
     })
 
-    it('Handle jsPrompt Alert and enter data', () => {
+    it('Handle jsPrompt Alert and enter data', 
+       { tags: ['alerts', 'data-entry'] }, 
+       () => {
 
         // Visit javascript_alerts page
         cy.visitPage('/javascript_alerts');
