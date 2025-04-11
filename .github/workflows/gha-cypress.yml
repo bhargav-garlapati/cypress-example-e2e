@@ -71,7 +71,7 @@ jobs:
           parallel: true
           group: "github-parallel-group"
           spec: ${{ github.event.inputs.specs == 'all' && 'cypress/e2e/**/*.cy.js' || github.event.inputs.specs }}
-          tag: github,actions,container-${{ matrix.containers }}
+          tag: github,actions
         env:
           ENV: ${{ github.event.inputs.environment || 'production' }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -91,6 +91,10 @@ jobs:
           CYPRESS_PASSWORD: ${{ secrets.PASSWORD }}
           # Tags
           CYPRESS_grepTags: ${{ github.event.inputs.tags || '' }}
+          # Tags to filter tests
+          CYPRESS_grepOmitFiltered: true
+          # Exclude SmartUI tests
+          CYPRESS_excludeSpecPattern: "**/smart-ui-tests/**"
 
       - name: Save results folder
         if: ${{ always() }}
