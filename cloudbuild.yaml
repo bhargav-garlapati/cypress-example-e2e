@@ -29,6 +29,8 @@ steps:
       - 'TOTAL_CONTAINERS=${_TOTAL_CONTAINERS}'
       - 'PERCY_TOKEN=${_PERCY_TOKEN}'
       - 'PROJECT_TOKEN=${_PROJECT_TOKEN}'
+      - 'CYPRESS_excludeSpecPattern=**/smart-ui-tests/**'
+      - 'CYPRESS_grepOmitFiltered=true'
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'

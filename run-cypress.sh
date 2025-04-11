@@ -35,8 +35,12 @@ export CYPRESS_RECORD_KEY=$RECORD_KEY
 if [ "$SPECS" != "all" ]; then
   SPEC_PATTERN="$SPECS"
 else
-  # Get all spec files
-  SPEC_FILES=($(find cypress/e2e -name "*.cy.js" | sort))
+  # Get all spec files, excluding SmartUI tests
+  EXCLUDE_PATTERN=${CYPRESS_excludeSpecPattern:-"**/smart-ui-tests/**"}
+  echo "Excluding specs matching: $EXCLUDE_PATTERN"
+  
+  # Use find with -not -path to exclude SmartUI tests
+  SPEC_FILES=($(find cypress/e2e -name "*.cy.js" -not -path "$EXCLUDE_PATTERN" | sort))
   TOTAL_SPECS=${#SPEC_FILES[@]}
   
   echo "Total spec files found: $TOTAL_SPECS"

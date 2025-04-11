@@ -51,7 +51,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
@@ -96,6 +96,10 @@ jobs:
           # Exclude SmartUI tests
           CYPRESS_excludeSpecPattern: "**/smart-ui-tests/**"
 
+      - name: Create results directory if it doesn't exist
+        if: ${{ always() }}
+        run: mkdir -p cypress/results
+
       - name: Save results folder
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -112,7 +116,21 @@ jobs:
     needs: cypress-tests
     if: ${{ always() }}
     steps: 
+     - name: Checkout
+       uses: actions/checkout@v4
+
+     - name: Setup Node
+       uses: actions/setup-node@v4
+       with:
+         node-version: 20
+         cache: 'npm'
+
+     - name: Install dependencies
+       run: npm ci
+
      - name: Download the results folders
+       id: download
+       continue-on-error: true
        uses: actions/download-artifact@v4
        with:
           name: my-artifact-*
@@ -121,13 +139,21 @@ jobs:
      - name: Test Artifact download
        run: ls -R
   
+     - name: Create public directory
+       run: mkdir -p public
+
      - name: Merge test results into one
-       if: ${{ always() }}
-       run: npm run report:merge
+       if: steps.download.outcome == 'success'
+       run: npm run report:merge || echo "No test results to merge"
 
      - name: Generate HTML report
-       if: ${{ always() }}
-       run: npm run report:generate
+       if: steps.download.outcome == 'success'
+       run: npm run report:generate || echo "No report to generate"
+
+     - name: Create default report if no artifacts
+       if: steps.download.outcome != 'success'
+       run: |
+         echo "<html><body><h1>No test results available</h1><p>No test results were generated in this run.</p></body></html>" > public/index.html
 
      - name: Deploy report page
        if: ${{ always() }}
