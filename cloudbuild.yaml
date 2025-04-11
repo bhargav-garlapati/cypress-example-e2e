@@ -15,9 +15,9 @@ steps:
       - |
         gcloud secrets versions access latest --secret=cypress-environment-variables > cypress.env.json
 
-  # Make script executable
+  # Make scripts executable
   - name: 'debian:stable-slim'
-    args: ['chmod', '+x', 'run-cypress.sh']
+    args: ['chmod', '+x', 'run-cypress.sh', 'run-parallel.sh']
 
   # Install Cypress once
   - name: 'cypress/included:14.3.0'
@@ -30,40 +30,10 @@ steps:
         cypress verify
         echo "Cypress binary installed successfully"
 
-  # Run parallel tests dynamically
+  # Run parallel tests using the script
   - name: 'cypress/included:14.3.0'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        # Create an array to store process IDs
-        declare -a PIDS
-        
-        # Run tests in parallel
-        for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
-          echo "Starting container $i of ${_TOTAL_CONTAINERS}"
-          ./run-cypress.sh "${_ENV}" "${_SPECS}" "$i" "${BUILD_ID}" "${_CYPRESS_RECORD_KEY}" "${_TAGS}" &
-          PIDS[$i]=$!
-        done
-        
-        # Wait for all processes to complete
-        ALL_PASSED=true
-        for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
-          if wait ${PIDS[$i]}; then
-            echo "Container $i completed successfully"
-          else
-            echo "Container $i failed with exit code $?"
-            ALL_PASSED=false
-          fi
-        done
-        
-        if [ "$ALL_PASSED" = true ]; then
-          echo "All containers completed successfully"
-          exit 0
-        else
-          echo "One or more containers failed"
-          exit 1
-        fi
+    entrypoint: './run-parallel.sh'
+    args: ['${_ENV}', '${_SPECS}', '${_TOTAL_CONTAINERS}', '${BUILD_ID}', '${_CYPRESS_RECORD_KEY}', '${_TAGS}']
     env:
       - 'CI_PLATFORM=gcp'
       - 'CI_SERVICE=cloud-build'
