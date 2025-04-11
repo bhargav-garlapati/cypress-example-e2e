@@ -80,6 +80,6 @@ ENV=$ENV npx cypress run \
   --group "$CI_PLATFORM-parallel-group" \
   --tag "$CI_PLATFORM,$CI_SERVICE,container-$CONTAINER_IDX"
 
-# Create results directory with proper structure for JSON reports
-mkdir -p cypress/results/json
-echo "Created cypress/results/json directory for test reports"
+# Create container-specific results directory
+mkdir -p cypress/results/json/container-$CONTAINER_IDX
+echo "Created cypress/results/json/container-$CONTAINER_IDX directory for test reports"

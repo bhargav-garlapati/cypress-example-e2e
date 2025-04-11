@@ -27,10 +27,6 @@ jobs:
   trigger-gcp-tests:
     name: Trigger GCP Cloud Build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [1, 2]  # Using 2 containers for parallelization
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,14 +47,15 @@ jobs:
         run: |
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
             --no-source \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_TOTAL_CONTAINERS=${{ strategy.job-total }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_TOTAL_CONTAINERS=2,_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build with ID: $BUILD_ID"
 
       - name: Wait for Cloud Build to complete
         run: |
-          gcloud beta builds log --stream ${{ steps.cloud-build.outputs.build_id }}
+          gcloud components install beta --quiet
+          gcloud beta builds log --quiet --stream ${{ steps.cloud-build.outputs.build_id }}
 
       - name: Download test results from GCS
         id: download-gcs
@@ -72,7 +69,7 @@ jobs:
       - name: Save results folder
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-results-${{ matrix.containers }}
+          name: cypress-results
           path: cypress/results/json
 
   post-tests-results:
@@ -107,6 +104,7 @@ jobs:
       - name: Prepare results directory
         run: |
           mkdir -p cypress/results/json
+          # Copy all JSON files from all container directories to the main json directory
           find downloaded-artifacts -name "*.json" -exec cp {} cypress/results/json/ \; || echo "No JSON files found"
           echo "Contents of cypress/results/json:"
           ls -la cypress/results/json || echo "Directory is empty"
