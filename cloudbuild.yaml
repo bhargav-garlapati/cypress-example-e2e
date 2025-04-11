@@ -21,15 +21,32 @@ steps:
     args:
       - '-c'
       - |
+        # Set environment variable for the environment
+        export CYPRESS_ENV=${_ENV}
+        
+        # Determine spec pattern
+        if [ "${_SPECS}" != "all" ]; then
+          SPEC_PATTERN="${_SPECS}"
+        else
+          SPEC_PATTERN="cypress/e2e/**/*.cy.js"
+        fi
+        
+        # Determine tags
+        if [ -n "${_TAGS}" ]; then
+          TAG_PARAM="--tag gcp,cloud-build,container-${_CONTAINER_IDX},${_TAGS}"
+        else
+          TAG_PARAM="--tag gcp,cloud-build,container-${_CONTAINER_IDX}"
+        fi
+        
         npx cypress run \
-          --spec "cypress/e2e/**/*.cy.js" \
+          --spec "$SPEC_PATTERN" \
           --browser chrome \
           --headless \
           --record \
           --parallel \
           --ci-build-id "${_COMMON_BUILD_ID}" \
           --group "cloud-build-parallel" \
-          --tag "gcp,cloud-build,container-${_CONTAINER_IDX}"
+          $TAG_PARAM
     env:
       - 'CYPRESS_RECORD_KEY=${_CYPRESS_RECORD_KEY}'
       - 'CI_PLATFORM=gcp'

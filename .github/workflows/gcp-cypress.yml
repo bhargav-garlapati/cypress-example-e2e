@@ -30,9 +30,8 @@ on:
         options:
           - '1'
           - '2'
+          - '3'
           - '4'
-          - '8'
-          - '16'
 
 jobs:
   trigger-gcp-tests:
@@ -41,8 +40,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Define all possible container indices
-        container_idx: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        # Define container indices up to 4 only
+        container_idx: [1, 2, 3, 4]
     
     steps:
       - name: Checkout
