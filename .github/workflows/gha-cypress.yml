@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Cypress Tests
         run: >
-          CI_PLATFORM=github CI_SERVICE=actions ./run-cypress.sh
+          CI_PLATFORM=github CI_SERVICE=actions TOTAL_CONTAINERS=${{ strategy.job-total }} ./run-cypress.sh
           ${{ github.event.inputs.environment || 'production' }}
           ${{ github.event.inputs.specs || 'all' }}
           ${{ matrix.containers }}

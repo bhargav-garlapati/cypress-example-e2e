@@ -51,14 +51,14 @@ jobs:
         run: |
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
             --no-source \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_TOTAL_CONTAINERS=${{ strategy.job-total }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build with ID: $BUILD_ID"
 
       - name: Wait for Cloud Build to complete
         run: |
-          gcloud builds log --stream ${{ steps.cloud-build.outputs.build_id }}
+          gcloud beta builds log --stream ${{ steps.cloud-build.outputs.build_id }}
 
       - name: Download test results from GCS
         run: |
