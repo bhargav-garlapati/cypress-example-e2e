@@ -65,7 +65,7 @@ jobs:
           record: true
           parallel: true
           group: "github-parallel-group"
-          spec: ${{ github.event.inputs.specs || 'cypress/e2e/**/*.cy.js' }}
+          spec: ${{ github.event.inputs.specs == 'all' && 'cypress/e2e/**/*.cy.js' || github.event.inputs.specs }}
           tag: github,actions,container-${{ matrix.containers }}
         env:
           ENV: ${{ github.event.inputs.environment || 'production' }}
