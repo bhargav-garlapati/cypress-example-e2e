@@ -82,12 +82,25 @@ jobs:
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build for Container ${{ matrix.container_idx }} with ID: $BUILD_ID"
+          echo "Build logs: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=cypress-example-e2e-397816"
 
       - name: Wait for Cloud Build to complete
         if: steps.check-container.outputs.should_run == 'true'
         run: |
-          gcloud components install beta --quiet
-          gcloud beta builds log --quiet --stream ${{ steps.cloud-build.outputs.build_id }}
+          echo "Waiting for build ${{ steps.cloud-build.outputs.build_id }} to complete..."
+          echo "Build logs: https://console.cloud.google.com/cloud-build/builds/${{ steps.cloud-build.outputs.build_id }}?project=cypress-example-e2e-397816"
+          while true; do
+            STATUS=$(gcloud builds describe ${{ steps.cloud-build.outputs.build_id }} --format='value(status)')
+            echo "Current status: $STATUS"
+            if [ "$STATUS" = "SUCCESS" ]; then
+              echo "Build completed successfully!"
+              break
+            elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "CANCELLED" ] || [ "$STATUS" = "TIMEOUT" ]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 30
+          done
 
       - name: Download test results from GCS
         id: download-gcs
