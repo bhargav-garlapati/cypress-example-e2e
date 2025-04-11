@@ -15,21 +15,19 @@ steps:
       - |
         gcloud secrets versions access latest --secret=cypress-environment-variables > cypress.env.json
 
+  # Make script executable
+  - name: 'debian:stable-slim'
+    args: ['chmod', '+x', 'run-cypress.sh']
+
   # Run Cypress tests
   - name: 'cypress/included:14.3.0'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        if [ "${_SPECS}" != "all" ]; then
-          ENV=${_ENV} cypress run --spec ${_SPECS} --browser chrome --headless --record --parallel --ci-build-id ${BUILD_ID} --group gcp-parallel-group --tag gcp,cloud-build,container-${_CONTAINER_IDX}
-        else
-          ENV=${_ENV} cypress run --spec "cypress/e2e/*cy.js" --browser chrome --headless --record --parallel --ci-build-id ${BUILD_ID} --group gcp-parallel-group --tag gcp,cloud-build,container-${_CONTAINER_IDX}
-        fi
-
-  # Create results directory if it doesn't exist
-  - name: 'debian:stable-slim'
-    args: ['mkdir', '-p', 'cypress/results']
+    entrypoint: './run-cypress.sh'
+    args: ['${_ENV}', '${_SPECS}', '${_CONTAINER_IDX}', '${BUILD_ID}', '${_CYPRESS_RECORD_KEY}', '${_TAGS}']
+    env:
+      - 'CI_PLATFORM=gcp'
+      - 'CI_SERVICE=cloud-build'
+      - 'PERCY_TOKEN=${_PERCY_TOKEN}'
+      - 'PROJECT_TOKEN=${_PROJECT_TOKEN}'
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'
@@ -41,5 +39,9 @@ substitutions:
   _CONTAINER_IDX: '1'  # Default container index
   _REPO_URL: 'https://github.com/bhargav-garlapati/cypress-example-e2e.git'  # Default repo URL
   _BRANCH: 'main'  # Default branch
+  _CYPRESS_RECORD_KEY: ''  # Default empty value, will be overridden by GitHub Actions
+  _TAGS: ''  # Default empty value for tags
+  _PERCY_TOKEN: ''  # Default empty value for Percy token
+  _PROJECT_TOKEN: ''  # Default empty value for SmartUI token
 
 timeout: 1800s  # 30 minutes

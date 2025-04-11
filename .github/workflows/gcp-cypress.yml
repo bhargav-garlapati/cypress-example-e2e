@@ -17,6 +17,11 @@ on:
         required: true
         default: 'all'
         type: string
+      tags:
+        description: 'Tags to filter tests (comma-separated)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   trigger-gcp-tests:
@@ -46,7 +51,7 @@ jobs:
         run: |
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
             --no-source \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}" \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build with ID: $BUILD_ID"

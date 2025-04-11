@@ -1,24 +1,27 @@
 name: Cypress Tests on GH Actions
 # This workflow will run Cypress tests on GitHub Actions
 on:
-  # Manual triggers with workflow_dispatch
+  # Manual trigger only
   workflow_dispatch:
-    
-  # push:
-  #   branches:
-  #     - "main"
-  # Add this part if you want to schedule test rerun
-  # schedule:
-  # Runs once every 4 hours
-  # - cron: '0 18 * * *'
-  # Runs every 2 hours
-  # - cron: '0 */2 * * *'
-  # Runs from 9AM to 5PM PST every 2 hours and one last run at 10PM on weekdays.
-  # Total 6,732 runs approx per month
-  # - cron: '0 1,6,17,19,21,23 * * 1-5'
-  # Runs at 10AM & 10PM PST on weekends.
-  # Total 816 runs approx per month
-  # - cron: '0 6,18 * * 6,0'
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      specs:
+        description: 'Test specs to run (comma-separated or "all")'
+        required: true
+        default: 'all'
+        type: string
+      tags:
+        description: 'Tags to filter tests (comma-separated)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   cypress-tests:
@@ -56,36 +59,24 @@ jobs:
       - name: Node info
         run: node -v
 
-      - name: "Demo Tests"
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          # Enable the below flags only after you configure the project with Cypress cloud
-          record: true
-          parallel: true
-          group: "Chrome"
-          spec: cypress/e2e/*cy.js
-        env:
-          ENV: "production"
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # Recommended: pass the GitHub token lets this action correctly
-          # determine the unique run id necessary to re-run the checks
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          
-          # Percy token
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Make script executable
+        run: chmod +x run-cypress.sh
 
-          #LambdaTest SmartUI Token
+      - name: Run Cypress Tests
+        run: >
+          CI_PLATFORM=github CI_SERVICE=actions ./run-cypress.sh
+          ${{ github.event.inputs.environment || 'production' }}
+          ${{ github.event.inputs.specs || 'all' }}
+          ${{ matrix.containers }}
+          ${{ github.run_id }}-${{ github.run_attempt }}
+          ${{ secrets.CYPRESS_RECORD_KEY }}
+          ${{ github.event.inputs.tags || '' }}
+        env:
+          ENV: ${{ github.event.inputs.environment || 'production' }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
-          
-          # Pre-production authentication 
-          CYPRESS_BASIC_AUTH_USERNAME: ${{ secrets.BASIC_AUTH_USERNAME }}
-          CYPRESS_BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
-          
-          #Login info
-          CYPRESS_USERNAME: ${{ secrets.USERNAME }}
-          CYPRESS_PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Save results folder
         if: ${{ always() }}

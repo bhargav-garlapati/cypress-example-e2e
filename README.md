@@ -5,10 +5,12 @@ This repository demonstrates how to set up and run end-to-end tests using Cypres
 ## Features
 
 - **End-to-End Testing**: Using Cypress to test web applications.
-- **CI/CD Integration**: GitHub Actions workflow to run tests on every push.
+- **CI/CD Integration**: Run tests on GitHub Actions or Google Cloud Build.
+- **Test Filtering**: Filter tests by tags to run specific test categories.
 - **Automated Reporting**: Test results published to GitHub Pages.
 - **Cross-browser Testing**: Supports testing on different browsers via Cypress.
 - **Configuration**: Configurable for different environments and use cases.
+- **Visual Testing**: Integrated with Percy and LambdaTest SmartUI for visual regression testing.
 
 ## Getting Started
 
@@ -38,8 +40,64 @@ Next, install dependencies `npm install`
 3. Run Tests 
     ```bash
    npm run cy:production
+   ```
+
+   To run tests with specific tags:
+   ```bash
+   CYPRESS_grepTags="ui,authentication" npm run cy:production
+   ```
 
 The tests are automatically triggered on every push request, with the results displayed on GitHub Pages.
+
+## Running Tests in CI/CD
+
+### GitHub Actions
+
+You can manually trigger tests in GitHub Actions:
+
+1. Go to the Actions tab in the repository
+2. Select "Cypress Tests on GH Actions" workflow
+3. Click "Run workflow"
+4. Choose your environment, specs, and tags (optional)
+5. Click "Run workflow"
+
+### Google Cloud Build
+
+You can manually trigger tests in Google Cloud Build through GitHub Actions:
+
+1. Go to the Actions tab in the repository
+2. Select "Cypress Tests on GCP" workflow
+3. Click "Run workflow"
+4. Choose your environment, specs, and tags (optional)
+5. Click "Run workflow"
+
+This will trigger a Cloud Build job that runs the tests and publishes the results.
+
+## Test Tags
+
+Tests are organized with tags to allow running specific types of tests. Available tags include:
+
+- **ui**: User interface tests
+- **authentication**: Login and authentication tests
+- **form**: Form interaction tests
+- **form-elements**: Tests for specific form elements like checkboxes
+- **accessibility**: Accessibility tests using axe-core
+- **visual-testing**: Visual regression tests using Percy
+- **smartui**: Visual tests using LambdaTest SmartUI
+- **alerts**: Tests for JavaScript alerts, confirms, and prompts
+- **iframe**: Tests for iframe interactions
+- **drag-drop**: Tests for drag and drop functionality
+- **file-operations**: Tests for file upload/download
+- **dom-manipulation**: Tests for DOM manipulation
+- **negative-test**: Tests that are expected to fail
+- **security**: Security-related tests
+
+You can run tests with specific tags using:
+```bash
+CYPRESS_grepTags="ui,authentication" npm run cy:production
+```
+
+Or in CI/CD by specifying the tags in the workflow inputs.
 
  ## Test Demos
     - A/B Variation
