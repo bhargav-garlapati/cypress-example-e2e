@@ -19,10 +19,45 @@ steps:
   - name: 'debian:stable-slim'
     args: ['chmod', '+x', 'run-cypress.sh']
 
-  # Run Cypress tests
+  # Install Cypress once
   - name: 'cypress/included:14.3.0'
-    entrypoint: './run-cypress.sh'
-    args: ['${_ENV}', '${_SPECS}', '${_CONTAINER_IDX}', '${BUILD_ID}', '${_CYPRESS_RECORD_KEY}', '${_TAGS}']
+    id: 'install-cypress'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cypress install
+        cypress verify
+        echo "Cypress binary installed successfully"
+
+  # Run parallel tests dynamically
+  - name: 'cypress/included:14.3.0'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Create an array to store process IDs
+        declare -a PIDS
+        FAILED=0
+        
+        # Run tests in parallel
+        for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
+          echo "Starting container $i of ${_TOTAL_CONTAINERS}"
+          ./run-cypress.sh "${_ENV}" "${_SPECS}" "$i" "${BUILD_ID}" "${_CYPRESS_RECORD_KEY}" "${_TAGS}" &
+          PIDS[$i]=$!
+        done
+        
+        # Wait for all processes to complete
+        for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
+          if wait ${PIDS[$i]}; then
+            echo "Container $i completed successfully"
+          else
+            echo "Container $i failed with exit code $?"
+            FAILED=1
+          fi
+        done
+        
+        exit ${FAILED}
     env:
       - 'CI_PLATFORM=gcp'
       - 'CI_SERVICE=cloud-build'

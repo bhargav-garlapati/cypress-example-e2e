@@ -98,14 +98,14 @@ jobs:
 
       - name: Create results directory if it doesn't exist
         if: ${{ always() }}
-        run: mkdir -p cypress/results/json
+        run: mkdir -p cypress/results/json/container-${{ matrix.containers }}
 
       - name: Save results folder
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results-${{ matrix.containers }}
-          path: cypress/results/json
+          path: cypress/results/json/container-${{ matrix.containers }}
 
   post-tests-results:
     runs-on: ubuntu-latest
@@ -139,6 +139,7 @@ jobs:
      - name: Prepare results directory
        run: |
          mkdir -p cypress/results/json
+         # Copy all JSON files from all container directories to the main json directory
          find downloaded-artifacts -name "*.json" -exec cp {} cypress/results/json/ \; || echo "No JSON files found"
          echo "Contents of cypress/results/json:"
          ls -la cypress/results/json || echo "Directory is empty"
