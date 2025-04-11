@@ -45,7 +45,7 @@ steps:
           SPECS_ARG="--spec cypress/e2e/*cy.js"
         fi
         
-        docker exec cypress-container bash -c "cd /workspace && ENV=$_ENV npx cypress run $SPECS_ARG --browser chrome --headless"
+        docker exec cypress-container bash -c "cd /workspace && ENV=$_ENV npx cypress run $SPECS_ARG --browser chrome --headless --record --parallel --ci-build-id $BUILD_ID --group gcp-parallel-group --tag gcp,cloud-build,container-$_CONTAINER_IDX"
 
   # Create results directory if it doesn't exist
   - name: 'gcr.io/cloud-builders/docker'
@@ -66,5 +66,7 @@ steps:
 substitutions:
   _ENV: 'production'  # Default environment
   _SPECS: 'all'       # Default specs to run
+  _CONTAINER_IDX: '1'  # Default container index
+  _CONTAINERS_COUNT: '2'  # Default total containers
 
 timeout: 1800s  # 30 minutes

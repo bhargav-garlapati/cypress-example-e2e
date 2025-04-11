@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         # run copies of the current job in parallel
-        containers: [1]
+        containers: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -89,15 +89,15 @@ jobs:
 
       - name: Save results folder
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: my-artifact-${{ matrix.containers }}
           path: |
             cypress/results
             cypress.config.js
             package.json
             reporter-config.json
-            
+
   post-tests-results:
     runs-on: ubuntu-latest
     # container:
@@ -107,9 +107,10 @@ jobs:
     if: ${{ always() }}
     steps: 
      - name: Download the results folders
-       uses: actions/download-artifact@v3
+       uses: actions/download-artifact@v4
        with:
-          name: test-results
+          name: my-artifact-*
+          merge-multiple: true
 
      - name: Test Artifact download
        run: ls -R

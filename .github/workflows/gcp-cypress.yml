@@ -22,6 +22,10 @@ jobs:
   trigger-gcp-tests:
     name: Trigger GCP Cloud Build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2]  # Using 2 containers for parallelization
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,7 +44,7 @@ jobs:
         id: cloud-build
         run: |
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }} \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_CONTAINERS_COUNT=2 \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build with ID: $BUILD_ID"
@@ -55,9 +59,9 @@ jobs:
           gsutil -m cp -r gs://cypress-example-e2e-results/${{ steps.cloud-build.outputs.build_id }}/* ./
 
       - name: Save results folder
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: my-artifact-${{ matrix.containers }}
           path: |
             cypress/results
             cypress.config.js
@@ -70,9 +74,13 @@ jobs:
     if: ${{ always() }}
     steps: 
       - name: Download the results folders
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: test-results
+          name: my-artifact-*
+          merge-multiple: true
+
+      - name: Test Artifact download
+        run: ls -R
 
       - name: Merge test results into one
         if: ${{ always() }}
