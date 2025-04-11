@@ -1,3 +1,7 @@
+volumes:
+  - name: 'cypress-cache'
+    path: '/root/.cache'
+
 steps:
   # Clone the repository
   - name: 'gcr.io/cloud-builders/git'
@@ -29,6 +33,9 @@ steps:
         cypress install
         cypress verify
         echo "Cypress binary installed successfully"
+    volumes:
+      - name: 'cypress-cache'
+        path: '/root/.cache'
 
   # Run parallel tests using the script
   - name: 'cypress/included:14.3.0'
@@ -42,6 +49,9 @@ steps:
       - 'PROJECT_TOKEN=${_PROJECT_TOKEN}'
       - 'CYPRESS_excludeSpecPattern=**/smart-ui-tests/**'
       - 'CYPRESS_grepOmitFiltered=true'
+    volumes:
+      - name: 'cypress-cache'
+        path: '/root/.cache'
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'
