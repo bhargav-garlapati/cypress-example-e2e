@@ -1,7 +1,3 @@
-volumes:
-  - name: 'cypress-cache'
-    path: '/root/.cache'
-
 steps:
   # Clone the repository
   - name: 'gcr.io/cloud-builders/git'
