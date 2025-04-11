@@ -38,7 +38,6 @@ steps:
       - |
         # Create an array to store process IDs
         declare -a PIDS
-        EXIT_CODE=0
         
         # Run tests in parallel
         for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
@@ -48,16 +47,23 @@ steps:
         done
         
         # Wait for all processes to complete
+        ALL_PASSED=true
         for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
           if wait ${PIDS[$i]}; then
             echo "Container $i completed successfully"
           else
             echo "Container $i failed with exit code $?"
-            EXIT_CODE=1
+            ALL_PASSED=false
           fi
         done
         
-        exit $EXIT_CODE
+        if [ "$ALL_PASSED" = true ]; then
+          echo "All containers completed successfully"
+          exit 0
+        else
+          echo "One or more containers failed"
+          exit 1
+        fi
     env:
       - 'CI_PLATFORM=gcp'
       - 'CI_SERVICE=cloud-build'
