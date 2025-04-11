@@ -26,27 +26,27 @@ steps:
         
         # Determine spec pattern
         if [ "${_SPECS}" != "all" ]; then
-          SPEC_PATTERN="${_SPECS}"
+          local_spec_pattern="${_SPECS}"
         else
-          SPEC_PATTERN="cypress/e2e/**/*.cy.js"
+          local_spec_pattern="cypress/e2e/**/*.cy.js"
         fi
         
         # Determine tags
         if [ -n "${_TAGS}" ]; then
-          TAG_PARAM="--tag gcp,cloud-build,container-${_CONTAINER_IDX},${_TAGS}"
+          local_tag_param="--tag gcp,cloud-build,container-${_CONTAINER_IDX},${_TAGS}"
         else
-          TAG_PARAM="--tag gcp,cloud-build,container-${_CONTAINER_IDX}"
+          local_tag_param="--tag gcp,cloud-build,container-${_CONTAINER_IDX}"
         fi
         
         npx cypress run \
-          --spec "$SPEC_PATTERN" \
+          --spec "$local_spec_pattern" \
           --browser chrome \
           --headless \
           --record \
           --parallel \
           --ci-build-id "${_COMMON_BUILD_ID}" \
           --group "cloud-build-parallel" \
-          $TAG_PARAM
+          $local_tag_param
     env:
       - 'CYPRESS_RECORD_KEY=${_CYPRESS_RECORD_KEY}'
       - 'CI_PLATFORM=gcp'
