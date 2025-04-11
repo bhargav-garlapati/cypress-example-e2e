@@ -50,7 +50,6 @@ steps:
 substitutions:
   _ENV: 'production'  # Default environment
   _SPECS: 'all'       # Default specs to run
-  _CONTAINER_IDX: '1'  # Default container index
   _TOTAL_CONTAINERS: '2'  # Default total containers, will be overridden by GitHub Actions
   _REPO_URL: 'https://github.com/bhargav-garlapati/cypress-example-e2e.git'  # Default repo URL
   _BRANCH: 'main'  # Default branch
