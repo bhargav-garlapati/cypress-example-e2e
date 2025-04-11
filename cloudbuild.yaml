@@ -42,14 +42,14 @@ steps:
     args:
       - '-c'
       - |
-        SPECS_ARG=""
+        SPEC_OPTION=""
         if [ "$_SPECS" != "all" ]; then
-          SPECS_ARG="--spec $_SPECS"
+          SPEC_OPTION="--spec $_SPECS"
         else
-          SPECS_ARG="--spec cypress/e2e/*cy.js"
+          SPEC_OPTION="--spec cypress/e2e/*cy.js"
         fi
         
-        docker exec cypress-container bash -c "cd /workspace && ENV=$_ENV npx cypress run $SPECS_ARG --browser chrome --headless --record --parallel --ci-build-id $BUILD_ID --group gcp-parallel-group --tag gcp,cloud-build,container-$_CONTAINER_IDX"
+        docker exec cypress-container bash -c "cd /workspace && ENV=$_ENV npx cypress run $SPEC_OPTION --browser chrome --headless --record --parallel --ci-build-id ${BUILD_ID} --group gcp-parallel-group --tag gcp,cloud-build,container-$_CONTAINER_IDX"
 
   # Create results directory if it doesn't exist
   - name: 'gcr.io/cloud-builders/docker'
@@ -61,7 +61,7 @@ steps:
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['-m', 'cp', '-r', 'cypress/results', 'gs://cypress-example-e2e-results/$BUILD_ID/']
+    args: ['-m', 'cp', '-r', 'cypress/results', 'gs://cypress-example-e2e-results/${BUILD_ID}/']
 
   # Clean up the container
   - name: 'gcr.io/cloud-builders/docker'
