@@ -45,7 +45,7 @@ jobs:
         run: |
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
             --no-source \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_CONTAINERS_COUNT=2,_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}" \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.containers }},_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}" \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "Triggered Cloud Build with ID: $BUILD_ID"
