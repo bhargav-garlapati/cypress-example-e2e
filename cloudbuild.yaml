@@ -3,6 +3,10 @@ steps:
   - name: 'gcr.io/cloud-builders/git'
     args: ['clone', '${_REPO_URL}', '--branch', '${_BRANCH}', '.']
 
+  # Install dependencies
+  - name: 'node:20'
+    args: ['npm', 'ci']
+
   # Get secrets from Secret Manager
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
