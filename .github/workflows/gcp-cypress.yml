@@ -64,18 +64,16 @@ jobs:
         id: download-gcs
         continue-on-error: true
         run: |
-          mkdir -p cypress/results
+          mkdir -p cypress/results/json
           gsutil -m cp -r gs://cypress-example-e2e-results/${{ steps.cloud-build.outputs.build_id }}/* ./ || echo "No results found in GCS bucket"
+          echo "GCS downloaded content:"
+          find cypress/results -type f | sort
 
       - name: Save results folder
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact-${{ matrix.containers }}
-          path: |
-            cypress/results
-            cypress.config.js
-            package.json
-            reporter-config.json
+          name: cypress-results-${{ matrix.containers }}
+          path: cypress/results/json
 
   post-tests-results:
     runs-on: ubuntu-latest
@@ -94,30 +92,36 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download the results folders
+      - name: Download all artifacts
         id: download
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: my-artifact-*
-          merge-multiple: true
+          path: downloaded-artifacts
 
-      - name: Test Artifact download
-        run: ls -R
+      - name: Debug downloaded artifacts
+        run: |
+          echo "Downloaded artifacts structure:"
+          find downloaded-artifacts -type f | sort
+
+      - name: Prepare results directory
+        run: |
+          mkdir -p cypress/results/json
+          find downloaded-artifacts -name "*.json" -exec cp {} cypress/results/json/ \; || echo "No JSON files found"
+          echo "Contents of cypress/results/json:"
+          ls -la cypress/results/json || echo "Directory is empty"
   
       - name: Create public directory
         run: mkdir -p public
 
       - name: Merge test results into one
-        if: steps.download.outcome == 'success'
         run: npm run report:merge || echo "No test results to merge"
 
       - name: Generate HTML report
-        if: steps.download.outcome == 'success'
         run: npm run report:generate || echo "No report to generate"
 
-      - name: Create default report if no artifacts
-        if: steps.download.outcome != 'success'
+      - name: Create default report if no results
+        if: ${{ failure() }}
         run: |
           echo "<html><body><h1>No test results available</h1><p>No test results were generated in this run.</p></body></html>" > public/index.html
 

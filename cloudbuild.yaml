@@ -34,7 +34,7 @@ steps:
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['-m', 'cp', '-r', 'cypress/results', 'gs://cypress-example-e2e-results/${BUILD_ID}/']
+    args: ['-m', 'cp', '-r', 'cypress/results/json', 'gs://cypress-example-e2e-results/${BUILD_ID}/cypress/results/']
 
 substitutions:
   _ENV: 'production'  # Default environment
