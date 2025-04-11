@@ -22,11 +22,28 @@ on:
         required: false
         default: ''
         type: string
+      parallel_machines:
+        description: 'Number of parallel machines to use'
+        required: true
+        default: '2'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '4'
+          - '8'
+          - '16'
 
 jobs:
   trigger-gcp-tests:
     name: Trigger GCP Cloud Build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Define all possible container indices
+        container_idx: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,34 +59,52 @@ jobs:
         with:
           project_id: cypress-example-e2e-397816
 
-      - name: Trigger Cloud Build
-        id: cloud-build
+      # Skip this job if container_idx is greater than parallel_machines
+      - name: Check if this container should run
+        id: check-container
         run: |
+          if [ ${{ matrix.container_idx }} -le ${{ github.event.inputs.parallel_machines }} ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Skipping container ${{ matrix.container_idx }} as it exceeds parallel_machines=${{ github.event.inputs.parallel_machines }}"
+          fi
+
+      - name: Trigger Cloud Build for Container ${{ matrix.container_idx }}
+        id: cloud-build
+        if: steps.check-container.outputs.should_run == 'true'
+        run: |
+          # Use GitHub run ID as the common build ID for all containers
+          COMMON_BUILD_ID="${{ github.run_id }}"
+          
           BUILD_ID=$(gcloud builds submit --config=cloudbuild.yaml \
             --no-source \
-            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_TOTAL_CONTAINERS=2,_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
+            --substitutions=_ENV=${{ github.event.inputs.environment }},_SPECS=${{ github.event.inputs.specs }},_CONTAINER_IDX=${{ matrix.container_idx }},_TOTAL_CONTAINERS=${{ github.event.inputs.parallel_machines }},_COMMON_BUILD_ID="$COMMON_BUILD_ID",_REPO_URL="${{ github.server_url }}/${{ github.repository }}.git",_BRANCH="${{ github.ref_name }}",_CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}",_TAGS="${{ github.event.inputs.tags }}",_PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}",_PROJECT_TOKEN="${{ secrets.PROJECT_TOKEN }}" \
             --async --format='value(id)')
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
-          echo "Triggered Cloud Build with ID: $BUILD_ID"
+          echo "Triggered Cloud Build for Container ${{ matrix.container_idx }} with ID: $BUILD_ID"
 
       - name: Wait for Cloud Build to complete
+        if: steps.check-container.outputs.should_run == 'true'
         run: |
           gcloud components install beta --quiet
           gcloud beta builds log --quiet --stream ${{ steps.cloud-build.outputs.build_id }}
 
       - name: Download test results from GCS
         id: download-gcs
+        if: steps.check-container.outputs.should_run == 'true'
         continue-on-error: true
         run: |
-          mkdir -p cypress/results/json
+          mkdir -p cypress/results/json/container-${{ matrix.container_idx }}
           gsutil -m cp -r gs://cypress-example-e2e-results/${{ steps.cloud-build.outputs.build_id }}/* ./ || echo "No results found in GCS bucket"
-          echo "GCS downloaded content:"
+          echo "GCS downloaded content for container ${{ matrix.container_idx }}:"
           find cypress/results -type f | sort
 
       - name: Save results folder
+        if: steps.check-container.outputs.should_run == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-results
+          name: cypress-results-${{ matrix.container_idx }}
           path: cypress/results/json
 
   post-tests-results:

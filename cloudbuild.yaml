@@ -15,39 +15,41 @@ steps:
       - |
         gcloud secrets versions access latest --secret=cypress-environment-variables > cypress.env.json
 
-  # Make scripts executable
-  - name: 'debian:stable-slim'
-    args: ['chmod', '+x', 'run-cypress.sh', 'run-parallel.sh']
-
-  # Install Cypress once
+  # Run Cypress tests with parallelization
   - name: 'cypress/included:14.3.0'
-    id: 'install-cypress'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        cypress install
-        cypress verify
-        echo "Cypress binary installed successfully"
-    volumes:
-      - name: 'cypress-cache'
-        path: '/root/.cache'
-
-  # Run parallel tests using the script
-  - name: 'cypress/included:14.3.0'
-    entrypoint: './run-parallel.sh'
-    args: ['${_ENV}', '${_SPECS}', '${_TOTAL_CONTAINERS}', '${BUILD_ID}', '${_CYPRESS_RECORD_KEY}', '${_TAGS}']
+        npx cypress run \
+          --spec "cypress/e2e/**/*.cy.js" \
+          --browser chrome \
+          --headless \
+          --record \
+          --parallel \
+          --ci-build-id "${_COMMON_BUILD_ID}" \
+          --group "cloud-build-parallel" \
+          --tag "gcp,cloud-build,container-${_CONTAINER_IDX}"
     env:
+      - 'CYPRESS_RECORD_KEY=${_CYPRESS_RECORD_KEY}'
       - 'CI_PLATFORM=gcp'
       - 'CI_SERVICE=cloud-build'
+      - 'CONTAINER_IDX=${_CONTAINER_IDX}'
       - 'TOTAL_CONTAINERS=${_TOTAL_CONTAINERS}'
       - 'PERCY_TOKEN=${_PERCY_TOKEN}'
       - 'PROJECT_TOKEN=${_PROJECT_TOKEN}'
       - 'CYPRESS_excludeSpecPattern=**/smart-ui-tests/**'
       - 'CYPRESS_grepOmitFiltered=true'
-    volumes:
-      - name: 'cypress-cache'
-        path: '/root/.cache'
+
+  # Create container-specific results directory
+  - name: 'debian:stable-slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        mkdir -p cypress/results/json
+        cp -r cypress/results/* cypress/results/json/ 2>/dev/null || true
+        echo "Created cypress/results/json directory for test reports"
 
   # Upload results to GCS
   - name: 'gcr.io/cloud-builders/gsutil'
@@ -56,7 +58,9 @@ steps:
 substitutions:
   _ENV: 'production'  # Default environment
   _SPECS: 'all'       # Default specs to run
-  _TOTAL_CONTAINERS: '2'  # Default total containers, will be overridden by GitHub Actions
+  _CONTAINER_IDX: '1'  # Default container index
+  _TOTAL_CONTAINERS: '2'  # Default total containers
+  _COMMON_BUILD_ID: ''  # Common build ID for all containers
   _REPO_URL: 'https://github.com/bhargav-garlapati/cypress-example-e2e.git'  # Default repo URL
   _BRANCH: 'main'  # Default branch
   _CYPRESS_RECORD_KEY: ''  # Default empty value, will be overridden by GitHub Actions
