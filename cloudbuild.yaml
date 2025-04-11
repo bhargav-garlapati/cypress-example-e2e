@@ -38,7 +38,7 @@ steps:
       - |
         # Create an array to store process IDs
         declare -a PIDS
-        FAILED=0
+        EXIT_CODE=0
         
         # Run tests in parallel
         for i in $(seq 1 ${_TOTAL_CONTAINERS}); do
@@ -53,11 +53,11 @@ steps:
             echo "Container $i completed successfully"
           else
             echo "Container $i failed with exit code $?"
-            FAILED=1
+            EXIT_CODE=1
           fi
         done
         
-        exit ${FAILED}
+        exit $EXIT_CODE
     env:
       - 'CI_PLATFORM=gcp'
       - 'CI_SERVICE=cloud-build'
