@@ -72,7 +72,6 @@ ENV=$ENV npx cypress run \
   --browser chrome \
   --headless \
   --record \
-  --parallel \
   --ci-build-id "$BUILD_ID" \
   --group "$CI_PLATFORM-parallel-group" \
   --tag "$CI_PLATFORM,$CI_SERVICE,container-$CONTAINER_IDX"

@@ -49,9 +49,8 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Install project
-        run: |
-          npm ci
+      - name: Install dependencies
+        run: npm ci
 
       - name: Cypress info
         run: npx cypress info
@@ -59,24 +58,23 @@ jobs:
       - name: Node info
         run: node -v
 
-      - name: Make script executable
-        run: chmod +x run-cypress.sh
-
       - name: Run Cypress Tests
-        run: >
-          CI_PLATFORM=github CI_SERVICE=actions TOTAL_CONTAINERS=${{ strategy.job-total }} ./run-cypress.sh
-          ${{ github.event.inputs.environment || 'production' }}
-          ${{ github.event.inputs.specs || 'all' }}
-          ${{ matrix.containers }}
-          ${{ github.run_id }}-${{ github.run_attempt }}
-          ${{ secrets.CYPRESS_RECORD_KEY }}
-          ${{ github.event.inputs.tags || '' }}
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          record: true
+          parallel: true
+          group: "github-parallel-group"
+          spec: ${{ github.event.inputs.specs || 'cypress/e2e/**/*.cy.js' }}
+          tag: github,actions,container-${{ matrix.containers }}
         env:
           ENV: ${{ github.event.inputs.environment || 'production' }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          CYPRESS_grepTags: ${{ github.event.inputs.tags || '' }}
 
       - name: Save results folder
         if: ${{ always() }}
@@ -91,9 +89,6 @@ jobs:
 
   post-tests-results:
     runs-on: ubuntu-latest
-    # container:
-    #   image: cypress/browsers:node16.13.0-chrome95-ff94
-    #   options: --user 1001
     needs: cypress-tests
     if: ${{ always() }}
     steps: 
@@ -106,12 +101,6 @@ jobs:
      - name: Test Artifact download
        run: ls -R
   
-    #  - name: Creating a public directory and setting permissions
-    #    if: ${{ always() }}
-    #    run: |
-    #       mkdir public
-    #       cp -r cypress/videos public/videos
-
      - name: Merge test results into one
        if: ${{ always() }}
        run: npm run report:merge
@@ -128,35 +117,3 @@ jobs:
           publish_dir: ./public
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
-          
-    #  - name: "Cypress Email Results"
-    #    uses: cypress-io/github-action@v4
-    #    with:
-    #       runTests: false
-    #       config-file: email.config.js
-    #    env:
-    #       # email test results after the tests are finished
-    #       EMAIL_TO: ${{ secrets.EMAIL_TO }}
-    #       # pass SendGrid settings to the plugin via environment variables
-    #       SENDGRID_HOST: ${{ secrets.SENDGRID_HOST }}
-    #       SENDGRID_PORT: ${{ secrets.SENDGRID_PORT }}
-    #       SENDGRID_USER: ${{ secrets.SENDGRID_USER }}
-    #       SENDGRID_PASSWORD: ${{ secrets.SENDGRID_PASSWORD }}
-    #       SENDGRID_FROM: ${{ secrets.SENDGRID_FROM }}
-          
-    #  - name: Post Slack Notification
-    #    uses: 8398a7/action-slack@v3
-    #    with:
-    #       username: "CYPRESS-E2E-REPORT"
-    #       status: custom
-    #       fields: workflow,message,commit,repo,ref,author
-    #       custom_payload: |
-    #         {
-    #           attachments: [{
-    #             color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-    #             text: `${process.env.AS_WORKFLOW}\n (${process.env.AS_MESSAGE})-(${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }}`,
-    #           }]
-    #         }
-    #    env:
-    #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-    #    if: always() # Pick up events even if the job fails or is cancelled.
